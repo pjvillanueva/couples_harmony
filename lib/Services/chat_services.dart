@@ -3,13 +3,13 @@
 import 'dart:convert';
 import 'package:couples_harmony/Blocs/ChatCubit/chat_cubit.dart';
 import 'package:couples_harmony/Blocs/PromptCubit/prompt_cubit.dart';
-import 'package:couples_harmony/Helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ChatService {
-  final String apiKey = OPEN_AI_API_KEY;
+  final String apiKey = dotenv.env['OPEN_API_KEY'] ?? '';
 
   Future<String> askOpenAI(BuildContext context, String promptCode,
       {bool addConversataion = false}) async {
