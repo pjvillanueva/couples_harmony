@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "863490886076",
+    "project_id": "couplesharmony-test-app",
+    "storage_bucket": "couplesharmony-test-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863490886076:android:32081e54eed51ff51fc3b9",
+        "android_client_info": {
+          "package_name": "com.example.couples_harmony"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBO_-UQlbGvmEm04D8u76WrvHDWJURfzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

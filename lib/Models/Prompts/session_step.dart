@@ -1,7 +1,4 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
-
-import 'dart:convert';
-
 import 'package:couples_harmony/Blocs/ChatCubit/chat_cubit.dart';
 import 'package:couples_harmony/Screens/ChatScreen/chat_screen.dart';
 import 'package:couples_harmony/Services/chat_services.dart';
@@ -62,12 +59,12 @@ class PersonalFeelingsStep1 extends SessionStep {
     //save feeling
     context.read<ChatCubit>().setFeeling(input);
     //create prompt
-    String prompt =
-        "The husband's feeling is \"$input\" . Acknowledge the husband's feelings. Your response should be concise, under 200 words. In the end ask if you got it right - must be answerable by \"yes\" or \"no\".'";
+    // String prompt =
+    //     "The husband's feeling is \"$input\" . Acknowledge the husband's feelings. Your response should be concise, under 200 words. In the end ask if you got it right - must be answerable by \"yes\" or \"no\".'";
     //ask openai
-    var response = await chatService.askOpenAI(prompt);
+    var response = await chatService.askOpenAI(context, 'PF1');
     //add assistant response to conversation history
-    _addAssistantMessage(context, response);
+    _addAssistantMessage(context, response, 'PF1');
     //proceed to step 2
     _nextStep(context);
   }
@@ -86,20 +83,20 @@ class PersonalFeelingsStep2 extends SessionStep {
   Future<void> Run(BuildContext context, String input) async {
     _addUserMessage(context, _getCondition(input));
     var index = int.parse(input);
-    var state = context.read<ChatCubit>().state;
+
     switch (index) {
       case 0:
         //ask the event that cause this problem
-        String prompt =
-            "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
-        var response = await chatService.askOpenAI(prompt);
+        // String prompt =
+        // "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
+        var response = await chatService.askOpenAI(context, 'PF2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'PF2');
         _nextStep(context);
         break;
       case 1:
         //ask again what husband is feeling
-        _addAssistantMessage(context, 'What are you feeling?');
+        _addAssistantMessage(context, 'What are you feeling?', '');
         _backToStep(context, 1);
         break;
       default:
@@ -113,18 +110,17 @@ class PersonalFeelingsStep3 extends SessionStep {
 
   @override
   Future<void> Run(BuildContext context, String input) async {
-    var state = context.read<ChatCubit>().state;
     //add user input
     _addUserMessage(context, input);
     //save event
     context.read<ChatCubit>().setEvent(input);
     //create prompt
-    String prompt =
-        "This is the response: ${state.event} Analyze his response, sum it up in less than 500 characters. Say sounds like you are feeling ${state.feeling} because ${state.event}, Am I right?";
+    // String prompt =
+    // "This is the response: ${state.event} Analyze his response, sum it up in less than 500 characters. Say sounds like you are feeling ${state.feeling} because ${state.event}, Am I right?";
     //ask openai
-    var response = await chatService.askOpenAI(prompt);
+    var response = await chatService.askOpenAI(context, 'PF3');
     //add assistant response to conversation history
-    _addAssistantMessage(context, response);
+    _addAssistantMessage(context, response, 'PF3');
     _nextStep(context);
   }
 }
@@ -142,23 +138,20 @@ class PersonalFeelingsStep4 extends SessionStep {
   Future<void> Run(BuildContext context, String input) async {
     _addUserMessage(context, _getCondition(input));
     var index = int.parse(input);
-    var state = context.read<ChatCubit>().state;
     switch (index) {
       case 0:
-        String prompt =
-            "Husband's feeling: ${state.feeling}. Event: ${state.event} . be the best therapist in the world and empathise with his feelings. Say that 'that must be hard.' Make 2 sentences to empathis with his feelings. Then ask 'Did I understand you right?'";
-        var response = await chatService.askOpenAI(prompt);
+        var response = await chatService.askOpenAI(context, 'PF4');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'PF4');
         _nextStep(context);
         break;
       case 1:
         //ask again what cause of his feeling
-        String prompt =
-            "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
-        var response = await chatService.askOpenAI(prompt);
+        // String prompt =
+        //     "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
+        var response = await chatService.askOpenAI(context, 'PF2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'PF2');
         _backToStep(context, 3);
         break;
       default:
@@ -179,45 +172,44 @@ class PersonalFeelingsStep5 extends SessionStep {
   Future<void> Run(BuildContext context, String input) async {
     _addUserMessage(context, _getCondition(input));
     var index = int.parse(input);
-    var state = context.read<ChatCubit>().state;
     switch (index) {
       case 0:
         //Validate his feelings
         //create prompt
-        String prompt1 =
-            "Validate his feelings. Display 3 or 4 sentences of validation.";
+        // String prompt1 =
+        //     "Validate his feelings. Display 3 or 4 sentences of validation.";
         //ask openai
-        var response1 = await chatService.askOpenAI(prompt1);
+        var response1 = await chatService.askOpenAI(context, 'PF5a');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response1);
+        _addAssistantMessage(context, response1, 'PF5a');
 
         //Give him confidence
         //create prompt
-        String prompt2 =
-            "Give him confidence. Display 3 or 4 sentences of confidence.";
+        // String prompt2 =
+        //     "Give him confidence. Display 3 or 4 sentences of confidence.";
         //ask openai
-        var response2 = await chatService.askOpenAI(prompt2);
+        var response2 = await chatService.askOpenAI(context, 'PF5b');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response2);
+        _addAssistantMessage(context, response2, 'PF5b');
 
         //ask about his wife
         //create prompt
-        String prompt3 =
-            "Asks if the husband know specifics about what his wife's feeling?";
+        // String prompt3 =
+        //     "Asks if the husband know specifics about what his wife's feeling?";
         //ask openai
-        var response3 = await chatService.askOpenAI(prompt3);
+        var response3 = await chatService.askOpenAI(context, 'PF5c');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response3);
+        _addAssistantMessage(context, response3, 'PF5c');
         //proceed to step 6
         _nextStep(context);
         break;
       case 1:
         //ask again what cause of his feeling
-        String prompt =
-            "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
-        var response = await chatService.askOpenAI(prompt);
+        // String prompt =
+        //     "Husband's feeling: ${state.feeling}. Probe one layer deeper. Be a therapist and find out what caused him to feel like this. What happened that he is feeling like this?";
+        var response = await chatService.askOpenAI(context, 'PF2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'PF2');
         _backToStep(context, 3);
         break;
     }
@@ -245,21 +237,21 @@ class PersonalFeelingsStep6 extends SessionStep {
       case 0:
         //proceed to self analysis steps
         _nextStage(context, SessionStage.selfAnalysis);
-        _addAssistantMessage(context, 'What is she feeling?');
+        _addAssistantMessage(context, 'What is she feeling?', '');
         break;
       case 1:
         //proceed to ask wife
         _nextStage(context, SessionStage.talkTowife);
-        _addAssistantMessage(context, 'Feature not yet implemented');
+        _addAssistantMessage(context, 'Feature not yet implemented', '');
         break;
       case 2:
         //create prompt
-        String prompt =
-            "Just reask this question. Asks if the husband know specifics about what the wife is feeling?. End with this Sorry, I need the wife's perspective to help. Please select one of the following options: ";
+        // String prompt =
+        // "Just reask this question. Asks if the husband know specifics about what the wife is feeling?. End with this Sorry, I need the wife's perspective to help. Please select one of the following options: ";
         //ask openai
-        var response = await chatService.askOpenAI(prompt);
+        var response = await chatService.askOpenAI(context, 'PF6');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'PF6');
         //back to step 6
         _backToStep(context, 6);
         break;
@@ -289,13 +281,12 @@ class SelfAnalysisStep1 extends SessionStep {
     //save wife feeling
     context.read<ChatCubit>().setWifeFeeling(input);
     //create a prompt
-    var prompt =
-        'Input: $input. ChatGPT Converts his input into wife feelings .. less than 200 characters {feeling}. Sounds like she is feeling {feeling}" .. Am i right?';
-
+    // var prompt =
+    // 'Input: $input. ChatGPT Converts his input into wife feelings .. less than 200 characters {feeling}. Sounds like she is feeling {feeling}" .. Am i right?';
     //ask openai
-    var response = await chatService.askOpenAI(prompt);
+    var response = await chatService.askOpenAI(context, 'SA1');
     //add assistant response to conversation history
-    _addAssistantMessage(context, response);
+    _addAssistantMessage(context, response, 'SA1');
     _nextStep(context);
   }
 }
@@ -313,20 +304,19 @@ class SelfAnalysisStep2 extends SessionStep {
   Future<void> Run(BuildContext context, String input) async {
     _addUserMessage(context, _getCondition(input));
     var index = int.parse(input);
-    var state = context.read<ChatCubit>().state;
     switch (index) {
       case 0:
-        var prompt =
-            'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
-        var response = await chatService.askOpenAI(prompt);
+        // var prompt =
+        // 'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
+        var response = await chatService.askOpenAI(context, 'SA2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'SA2');
         //next step
         _nextStep(context);
         break;
       case 1:
         //ask again what is wife feeling
-        _addAssistantMessage(context, 'What is she feeling?');
+        _addAssistantMessage(context, 'What is she feeling?', '');
         //back to step 1
         _backToStep(context, 1);
         break;
@@ -340,20 +330,20 @@ class SelfAnalysisStep3 extends SessionStep {
 
   @override
   Future<void> Run(BuildContext context, String input) async {
-    var state = context.read<ChatCubit>().state;
+    // var state = context.read<ChatCubit>().state;
     //add user message
     _addUserMessage(context, input);
     //save event
     context.read<ChatCubit>().setWifeEvent(input);
     //create a prompt
-    var prompt =
-        "Wife Event: $input, Wife feeling: ${state.wifeFeeling}. Analyze his response, sum it up in less than 500 characters. Display 'sounds likee she is feeling {feeling} because {event}' .. Yes or no";
+    // var prompt =
+    // "Wife Event: $input, Wife feeling: ${state.wifeFeeling}. Analyze his response, sum it up in less than 500 characters. Display 'sounds likee she is feeling {feeling} because {event}' .. Yes or no";
 
     //ask openai
-    var response = await chatService.askOpenAI(prompt);
+    var response = await chatService.askOpenAI(context, 'SA3');
 
     //add assistant response to conversation history
-    _addAssistantMessage(context, response);
+    _addAssistantMessage(context, response, 'SA3');
 
     //next step
     _nextStep(context);
@@ -371,31 +361,30 @@ class SelfAnalysisStep4 extends SessionStep {
 
   @override
   Future<void> Run(BuildContext context, String input) async {
-    var state = context.read<ChatCubit>().state;
     var index = int.parse(input);
     //add user message
     _addUserMessage(context, _getCondition(input));
     switch (index) {
       case 0:
         //create prompt
-        var prompt =
-            "Wife feelings: ${state.wifeFeeling} .Be the best therapist in the world and empathise with his feelings when he hears that his wife is feeling {wife feelings}. Say that 'that must be hard for you when she feels {wife feelings}' Make 2 sentences to empathise with his feelings. Then ask 'Did I understand you right? Do you want to add or change anythings'";
+        // var prompt =
+        // "Wife feelings: ${state.wifeFeeling} .Be the best therapist in the world and empathise with his feelings when he hears that his wife is feeling {wife feelings}. Say that 'that must be hard for you when she feels {wife feelings}' Make 2 sentences to empathise with his feelings. Then ask 'Did I understand you right? Do you want to add or change anythings'";
 
         //ask openai
-        var response = await chatService.askOpenAI(prompt);
+        var response = await chatService.askOpenAI(context, 'SA4');
 
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'SA4');
 
         //next step
         _nextStep(context);
         break;
       case 1:
-        var prompt =
-            'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
-        var response = await chatService.askOpenAI(prompt);
+        // var prompt =
+        // 'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
+        var response = await chatService.askOpenAI(context, 'SA2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'SA2');
         //next step
         _backToStep(context, 3);
         break;
@@ -415,32 +404,31 @@ class SelfAnalysisStep5 extends SessionStep {
   Future<void> Run(BuildContext context, String input) async {
     _addUserMessage(context, _getCondition(input));
     var index = int.parse(input);
-    var state = context.read<ChatCubit>().state;
     switch (index) {
       case 0:
         //ask again what is wife feeling
-        var prompt =
-            'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
-        var response = await chatService.askOpenAI(prompt);
+        // var prompt =
+        // 'Wife feeling: ${state.wifeFeeling}. Probe one layer deeper. Be a therapist and ask him if he knows what caused her to feel like this. What happened that she is feeling like this. ';
+        var response = await chatService.askOpenAI(context, 'SA2');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response);
+        _addAssistantMessage(context, response, 'SA2');
         //next step
         _backToStep(context, 3);
 
         break;
       case 1:
         //next step
-        var prompt1 =
-            " Husband feeling: ${state.feeling}. Wife feeling: ${state.wifeFeeling}. Validate his and her feelings. Generate 3 or 4 sentences of validation.";
-        var response1 = await chatService.askOpenAI(prompt1);
+        // var prompt1 =
+        // " Husband feeling: ${state.feeling}. Wife feeling: ${state.wifeFeeling}. Validate his and her feelings. Generate 3 or 4 sentences of validation.";
+        var response1 = await chatService.askOpenAI(context, 'SA5a');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response1);
+        _addAssistantMessage(context, response1, 'SA5a');
         //next step
-        var prompt2 =
-            "Husband feeling: ${state.feeling}. Wife feeling: ${state.wifeFeeling}. Give him conflidence that his feelings matter and that our solutions will be created taking into account his feelings as well as her feeelings. We will find a win win solution for both. Display 3 or 4 sentences of confidence. Then display ' give me a few seconds as I think of win-win solutions' ";
-        var response2 = await chatService.askOpenAI(prompt2);
+        // var prompt2 =
+        // "Husband feeling: ${state.feeling}. Wife feeling: ${state.wifeFeeling}. Give him conflidence that his feelings matter and that our solutions will be created taking into account his feelings as well as her feeelings. We will find a win win solution for both. Display 3 or 4 sentences of confidence. Then display ' give me a few seconds as I think of win-win solutions' ";
+        var response2 = await chatService.askOpenAI(context, 'SA5b');
         //add assistant response to conversation history
-        _addAssistantMessage(context, response2);
+        _addAssistantMessage(context, response2, 'SA5b');
         //next step
         _nextStage(context, SessionStage.solutionBuilding);
         //create solution here
@@ -457,16 +445,13 @@ class SolutionBuildingStep1 extends SessionStep {
 
   @override
   Future<void> Run(BuildContext context, String input) async {
-    var state = context.read<ChatCubit>().state;
-    var messagesInJson =
-        jsonEncode(state.messages.map((message) => message.toJson()).toList());
+    // var prompt =
+    // 'Conversation history: $messagesInJson. Base on this conversation history create a win win solution for the husband and wife';
 
-    var prompt =
-        'Conversation history: $messagesInJson. Base on this conversation history create a win win solution for the husband and wife';
-
-    var response = await chatService.askOpenAI(prompt);
-    _addAssistantMessage(context, 'Here is a win win solution for you:');
-    _addAssistantMessage(context, response);
+    var response =
+        await chatService.askOpenAI(context, 'SB1', addConversataion: true);
+    _addAssistantMessage(context, 'Here is a win win solution for you:', '');
+    _addAssistantMessage(context, response, '');
 
     _nextStep(context);
   }
@@ -489,7 +474,6 @@ class SolutionBuildingStep2 extends SessionStep {
       _nextStep(context);
       //run
       getCurrentStep(SessionStage.solutionBuilding, 3).Run(context, '');
-
     }
   }
 }
@@ -500,9 +484,10 @@ class SolutionBuildingStep3 extends SessionStep {
 
   @override
   Future<void> Run(BuildContext context, String input) async {
-    var prompt = "Congratulate user for finding a win win solution. Thank user for using the service. Say good bye.";
-    var response = await chatService.askOpenAI(prompt);
-    _addAssistantMessage(context, response);
+    // var prompt =
+    //     "Congratulate user for finding a win win solution. Thank user for using the service. Say good bye.";
+    var response = await chatService.askOpenAI(context, 'SB3');
+    _addAssistantMessage(context, response, 'SB3');
   }
 }
 
@@ -512,10 +497,10 @@ _addUserMessage(BuildContext context, String message) {
       .addMessage(ChatMessage(role: "user", content: message));
 }
 
-_addAssistantMessage(BuildContext context, String message) {
+_addAssistantMessage(BuildContext context, String message, String code) {
   context
       .read<ChatCubit>()
-      .addMessage(ChatMessage(role: "assistant", content: message));
+      .addMessage(ChatMessage(role: "assistant", content: message, code: code));
 }
 
 _nextStep(BuildContext context) {

@@ -5,24 +5,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ChatMessage {
   String role;
   String content;
+  String? code;
 
-  ChatMessage({required this.role, required this.content});
+  ChatMessage({required this.role, required this.content, this.code});
 
   toJson() => {'role': role, 'content': content};
 }
 
 // ignore: must_be_immutable
 class ChatState extends Equatable {
-  ChatState({
-    required this.messages,
-    required this.currentStep,
-    required this.sessionStage,
-    required this.isLoading,
-    required this.feeling,
-    required this.wifeFeeling,
-    required this.event,
-    required this.wifeEvent
-  });
+  ChatState(
+      {required this.messages,
+      required this.currentStep,
+      required this.sessionStage,
+      required this.isLoading,
+      required this.feeling,
+      required this.wifeFeeling,
+      required this.event,
+      required this.wifeEvent});
 
   List<ChatMessage> messages;
   int currentStep;
@@ -34,46 +34,51 @@ class ChatState extends Equatable {
   String wifeEvent;
 
   @override
-  List<Object> get props => [messages, currentStep, sessionStage, isLoading, feeling, wifeFeeling, event, wifeEvent];
+  List<Object> get props => [
+        messages,
+        currentStep,
+        sessionStage,
+        isLoading,
+        feeling,
+        wifeFeeling,
+        event,
+        wifeEvent
+      ];
 
-  ChatState copyWith({
-    List<ChatMessage>? messages,
-    int? currentStep,
-    SessionStage? sessionStage,
-    bool? isLoading,
-    String? feeling,
-    String? wifeFeeling,
-    String? event,
-    String? wifeEvent
-
-  }) {
+  ChatState copyWith(
+      {List<ChatMessage>? messages,
+      int? currentStep,
+      SessionStage? sessionStage,
+      bool? isLoading,
+      String? feeling,
+      String? wifeFeeling,
+      String? event,
+      String? wifeEvent}) {
     return ChatState(
-      messages: messages ?? this.messages,
-      currentStep: currentStep ?? this.currentStep,
-      sessionStage: sessionStage ?? this.sessionStage,
-      isLoading: isLoading ?? this.isLoading,
-      feeling: feeling ?? this.feeling,
-      wifeFeeling: wifeFeeling ?? this.wifeFeeling,
-      event: event ?? this.event,
-      wifeEvent: wifeEvent ?? this.wifeEvent
-    );
+        messages: messages ?? this.messages,
+        currentStep: currentStep ?? this.currentStep,
+        sessionStage: sessionStage ?? this.sessionStage,
+        isLoading: isLoading ?? this.isLoading,
+        feeling: feeling ?? this.feeling,
+        wifeFeeling: wifeFeeling ?? this.wifeFeeling,
+        event: event ?? this.event,
+        wifeEvent: wifeEvent ?? this.wifeEvent);
   }
 }
 
 class ChatCubit extends Cubit<ChatState> {
   ChatCubit()
       : super(ChatState(
-          isLoading: false,
-          messages: [
-            ChatMessage(role: "assistant", content: "What are you feeling?"),
-          ],
-          sessionStage: SessionStage.personalFeelings,
-          currentStep: 1,
-          feeling: '',
-          wifeFeeling: '',
-          event: '',
-          wifeEvent: ''
-        ));
+            isLoading: false,
+            messages: [
+              ChatMessage(role: "assistant", content: "What are you feeling?"),
+            ],
+            sessionStage: SessionStage.personalFeelings,
+            currentStep: 1,
+            feeling: '',
+            wifeFeeling: '',
+            event: '',
+            wifeEvent: ''));
 
   nextStep() {
     emit(state.copyWith(currentStep: state.currentStep + 1));
@@ -91,6 +96,10 @@ class ChatCubit extends Cubit<ChatState> {
     emit(state.copyWith(messages: [...state.messages, message]));
   }
 
+  setLoading(bool isLoading) {
+    emit(state.copyWith(isLoading: isLoading));
+  }
+
   setFeeling(String feeling) {
     emit(state.copyWith(feeling: feeling));
   }
@@ -105,5 +114,19 @@ class ChatCubit extends Cubit<ChatState> {
 
   setWifeEvent(String event) {
     emit(state.copyWith(wifeEvent: event));
+  }
+
+  resetChat() {
+    emit(state.copyWith(
+        isLoading: false,
+        messages: [
+          ChatMessage(role: "assistant", content: "What are you feeling?"),
+        ],
+        sessionStage: SessionStage.personalFeelings,
+        currentStep: 1,
+        feeling: '',
+        wifeFeeling: '',
+        event: '',
+        wifeEvent: ''));
   }
 }

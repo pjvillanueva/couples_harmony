@@ -70,6 +70,7 @@ class ChatMessagesState extends State<ChatMessages> {
           return TextBubble(
             message: message.content,
             isSender: message.role == "user" ? true : false,
+            code: message.code ?? '',
           );
         }
 
