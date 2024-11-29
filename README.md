@@ -43,6 +43,13 @@ Using an Emulator:
  - Open Android Studio.
  - Go to Device Manager, set up an emulator, and start it.
 
+5. Generate new OPEN AI API Key:
+  - Visit https://platform.openai.com/signup/ to create an account or log in.
+  - Go to "API Keys" under your OpenAI account settings.
+  - Generate a new key and paste it into the `.env` file as:
+   
+   OPENAI_API_KEY= REPLACE-THIS-WITH-NEW-OPEN-AI-API-KEY
+
 5. Run the App
 
 To start the app:
